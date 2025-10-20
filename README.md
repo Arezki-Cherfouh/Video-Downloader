@@ -1,0 +1,1 @@
+A simple video downloader that supports YouTube and many other platforms built with Python. Provides both a terminal-based version and a Tkinter GUI. Supports video and audio downloads using yt-dlp, with real-time progress updates and customizable save paths.
