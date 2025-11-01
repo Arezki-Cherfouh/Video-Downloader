@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Downloader • Qwerify</title>
+    <meta name="description" content="Download videos or audio instantly with Qwerify Downloader. Fast, simple, and built with a clean interface for maximum efficiency.">
+    <meta name="keywords" content="Qwerify, downloader, YouTube, video, audio, mp3, mp4, fast, simple, converter">
+    <meta property="og:site_name" content="Qwerify">
+    <meta property="og:title" content="Downloader • Qwerify">
+    <meta property="og:description" content="Download videos or audio instantly with Qwerify Downloader. Fast, simple, and built with a clean interface for maximum efficiency.">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <style>
+        body{background:#222;color:#eee;font-family:sans-serif;padding:40px;text-align:center;}
+        input,select,button{padding:10px;border-radius:8px;margin-top:10px;font-size:1em;}
+        video,audio{width:100%;max-width:800px;margin-top:20px;border-radius:12px;}
+        .download,.df{background:rgb(52,231,52);transition:transform 0.1s;border:none;color:#000;font-weight:bold;}
+        .opt{background:red;color:#fff;border:none;}
+        .url{width:100%;box-sizing:border-box;background:#333;color:#eee;border:1px solid #555;}
+        .bar{width:100%;max-width:800px;height:20px;background:#555;border-radius:10px;overflow:hidden;margin:20px auto;}
+        .progress{width:0;height:100%;background:lime;transition:width 0.2s;}
+        .result{margin-top:20px;}
+        .thumbnail{max-width:400px;border-radius:12px;margin:10px auto;display:block;}
+        .info{background:#333;padding:15px;border-radius:10px;max-width:800px;margin:20px auto;text-align:left;}
+        @media (min-width:1025px){.download:hover,.df:hover{transform:scale(1.03)}.download,.df{cursor:pointer;}.opt{cursor:pointer;}}
+        .download:active,.df:active{transform:scale(0.9);}
+    </style>
+</head>
+<body>
+    <h2>Video Downloader</h2>
+    <div style="display:grid;grid-template-columns:80% 1fr 1fr;column-gap:5px;margin:auto;max-width:800px;">
+        <input class="url" placeholder="Video URL">
+        <select class="opt">
+            <option value="1">Video</option>
+            <option value="2">Audio</option>
+        </select>
+        <button class="download">Proceed</button>
+    </div>
+    <div class="bar"><div class="progress"></div></div>
+    <div class="result"></div>
+    <script>
+        const API_URL = 'http://localhost:8000';
+        const btn = document.querySelector('.download');
+        const bar = document.querySelector('.progress');
+        const resultDiv = document.querySelector('.result');
+        btn.onclick = async () => {
+            const url = document.querySelector('.url').value;
+            const opt = document.querySelector('.opt').value;
+            if (!url) return alert('Enter URL');
+            bar.style.width = '0%';
+            resultDiv.innerHTML = '<p>Processing...</p>';
+            try {
+                bar.style.width = '30%';
+                const res = await fetch(`${API_URL}/download`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url, opt })
+                });
+                bar.style.width = '70%';
+                if (!res.ok) {
+                    const error = await res.json();
+                    throw new Error(error.detail || 'Download failed');
+                }
+                const data = await res.json();
+                bar.style.width = '100%';
+                const mediaType = opt === '2' ? 'audio' : 'video';
+                const fileExt = opt === '2' ? 'mp3' : 'mp4';
+                let html = `<h3 style="color:lime">✓ Ready to Download!</h3>`;
+                if (data.thumbnail) {
+                    html += `<img src="${data.thumbnail}" class="thumbnail" alt="Thumbnail">`;
+                }
+                html += `<div class="info">`;
+                html += `<p><strong>Title:</strong> ${data.title}</p>`;
+                if (data.filesize) html += `<p><strong>Size:</strong> ${data.filesize}</p>`;
+                if (data.duration) html += `<p><strong>Duration:</strong> ${Math.floor(data.duration / 60)}:${String(data.duration % 60).padStart(2, '0')}</p>`;
+                html += `</div>`;
+                html += `<${mediaType} controls src="${data.download_url}"></${mediaType}><br><br>`;
+                // html += `<a href="${data.download_url}" download="${data.title}.${fileExt}"><button class="df">Download File</button></a>`;
+                // html += `<button class="df" onclick="window.location.href='${data.download_url}'">Download File</button>`;
+                html += `<button class="df"><a href="${data.download_url}" download="${data.title}.${fileExt}" style="text-decoration:none;color:#fff;display:block;">Download File</a></button>`;
+                resultDiv.innerHTML = html;
+            } catch (e) {
+                bar.style.width = '0%';
+                resultDiv.innerHTML = `<p style="color:red">Error: ${e.message}</p>`;
+            }
+        };
+    </script>
+</body>
+</html>
