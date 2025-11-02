@@ -12,7 +12,7 @@
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <style>
         body{background:#222;color:#eee;font-family:sans-serif;padding-top:40px;text-align:center;}
-        input,select,button{padding:10px;border-radius:8px;margin-top:10px;font-size:1em;}
+        input,select,button{padding:10px;border-radius:8px;margin-top:10px;font-size:1em;min-height: 35px;}
         video,audio{width:100%;max-width:800px;margin-top:20px;border-radius:12px;}
         .download,.df{background:rgb(52,231,52);transition:transform 0.1s;border:none;color:#000;font-weight:bold;}
         .opt{background:red;color:#fff;border:none;}
@@ -24,11 +24,16 @@
         .info{background:#333;padding:15px;border-radius:10px;max-width:800px;margin:20px auto;text-align:left;}
         @media (min-width:1025px){.download:hover,.df:hover{transform:scale(1.03)}.download,.df{cursor:pointer;}.opt{cursor:pointer;}}
         .download:active,.df:active{transform:scale(0.9);}
+        .maindiv{grid-template-columns: 74% 1fr 1fr;}
+        @media (max-width:700px){input,select,button{padding:3px;border-radius:8px;margin-top:10px;font-size:0.7em;}.maindiv{grid-template-columns: 70% 1fr 1fr;}input{padding: 8px;}}
+        @media (max-width:385px){input,select,button{padding:2px;border-radius:8px;margin-top:10px;font-size:0.6em;}.maindiv{grid-template-columns: 65% 1fr 1fr;}input{padding: 8px;}}
+        @media (max-width:300px){input,select,button{padding:2px;border-radius:8px;margin-top:10px;font-size:0.5em;}.maindiv{grid-template-columns: 60% 1fr 1fr;}input{padding: 8px;}}
+        @media (max-width:260px){input,select,button{padding:2px;border-radius:8px;margin-top:10px;font-size:0.4em;}.maindiv{grid-template-columns: 55% 1fr 1fr;}input{padding: 8px;}}
     </style>
 </head>
 <body>
     <h2>Video Downloader</h2>
-    <div style="display:grid;grid-template-columns:80% 1fr 1fr;column-gap:5px;margin:auto;max-width:800px;width:100%">
+    <div style="display:grid;column-gap:5px;margin:auto;max-width:800px;" class="maindiv">
         <input class="url" placeholder="Video URL">
         <select class="opt">
             <option value="1">Video</option>
@@ -39,7 +44,7 @@
     <div class="bar"><div class="progress"></div></div>
     <div class="result"></div>
     <script>
-        const API_URL = 'https://video-downloader-production-e024.up.railway.app';
+        const API_URL = 'http://localhost:8000';
         const btn = document.querySelector('.download');
         const bar = document.querySelector('.progress');
         const resultDiv = document.querySelector('.result');
